@@ -1,44 +1,25 @@
-# Xcode
-#
-# gitignore contributors: remember to update Global/Xcode.gitignore, Objective-C.gitignore & Swift.gitignore
+# Windows default autosave extension
+*.asv
 
-## User settings
-xcuserdata/
+# OSX / *nix default autosave extension
+*.m~
 
-## Obj-C/Swift specific
-*.hmap
+# Compiled MEX binaries (all platforms)
+*.mex*
 
-## App packaging
-*.ipa
-*.dSYM.zip
-*.dSYM
+# Packaged app and toolbox files
+*.mlappinstall
+*.mltbx
 
-# CocoaPods
-#
-# We recommend against adding the Pods directory to your .gitignore. However
-# you should judge for yourself, the pros and cons are mentioned at:
-# https://guides.cocoapods.org/using/using-cocoapods.html#should-i-check-the-pods-directory-into-source-control
-#
-# Pods/
-#
-# Add this line if you want to avoid checking in source code from the Xcode workspace
-# *.xcworkspace
+# Generated helpsearch folders
+helpsearch*/
 
-# Carthage
-#
-# Add this line if you want to avoid checking in source code from Carthage dependencies.
-# Carthage/Checkouts
+# Simulink code generation folders
+slprj/
+sccprj/
 
-Carthage/Build/
+# Matlab code generation folders
+codegen/
 
-# fastlane
-#
-# It is recommended to not store the screenshots in the git repo.
-# Instead, use fastlane to re-generate the screenshots whenever they are needed.
-# For more information about the recommended setup visit:
-# https://docs.fastlane.tools/best-practices/source-control/#source-control
-
-fastlane/report.xml
-fastlane/Preview.html
-fastlane/screenshots/**/*.png
-fastlane/test_output
+# Simulink autosave extension
+*.autosave
