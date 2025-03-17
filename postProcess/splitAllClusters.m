@@ -16,6 +16,13 @@ NchanNear   = min(ops.Nchan, 32);
 Nnearest    = min(ops.Nchan, 32);
 sigmaMask   = ops.sigmaMask;
 
+% Number of pursuit iterations.
+if isfield(ops, 'max_peels')
+    max_peels = ops.max_peels;
+else
+    max_peels = 50;
+end
+
 ik = 0;
 Nfilt = size(rez.W,2);
 nsplits= 0;
@@ -73,7 +80,7 @@ while ik<Nfilt
     logp = zeros(numel(isp), 2); % initialize matrix of log probabilities that each spike is assigned to the first or second cluster
 
     % do 50 pursuit iteration
-    for k = 1:50
+    for k = 1 : max_peels
         % for each spike, estimate its probability to come from either Gaussian cluster
         logp(:,1) = -1/2*log(s1) - (x-mu1).^2/(2*s1) + log(p);
         logp(:,2) = -1/2*log(s2) - (x-mu2).^2/(2*s2) + log(1-p);
