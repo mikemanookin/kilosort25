@@ -16,8 +16,11 @@ smin = my_min(S1, loc_range, [1 2]);
 peaks = single(S1<smin+1e-3 & S1<Th); % the peaks are samples that achieve this local minimum, AND have negativities less than a preset threshold
 
 % only take local peaks that are isolated from other local peaks
-sum_peaks = my_sum(peaks, long_range, [1 2]); % if there is another local peak close by, this sum will be at least 2
-peaks = peaks .* (sum_peaks<1.2) .* S1; % set to 0 peaks that are not isolated, and multiply with the voltage values
+% sum_peaks = my_sum(peaks, long_range, [1 2]); % if there is another local peak close by, this sum will be at least 2
+% peaks = peaks .* (sum_peaks<1.2) .* S1; % set to 0 peaks that are not isolated, and multiply with the voltage values
+
+% Mike M. replaced the above two lines with this:
+peaks = peaks .* S1;
 
 % exclude temporal buffers
 peaks([1:nt0 end-nt0:end], :) = 0;
