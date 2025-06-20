@@ -29,7 +29,7 @@ for ibatch = 1:nskip:Nbatch
 
 
     % find isolated spikes from each batch
-    [row, col, mu] = isolated_peaks_new(dataRAW, ops);
+    [row, col] = isolated_peaks_new(dataRAW, ops);
 
     % for each peak, get the voltage snippet from that channel
     clips = get_SpikeSample(dataRAW, row, col, ops, 0);
@@ -40,7 +40,7 @@ for ibatch = 1:nskip:Nbatch
         dd(:, 2*size(dd,2)) = 0;
     end
 
-    dd(:, k + [1:size(c,2)]) = c;
+    dd(:, k + (1:size(c,2))) = c;
     k = k + size(c,2);
     if k>1e5
         break;
@@ -67,7 +67,7 @@ for i = 1:10
 end
 
 dd = double(gather(dd));
-[U Sv V] = svdecon(dd); % the PCs are just the left singular vectors of the waveforms
+[U, Sv, V] = svdecon(dd); % the PCs are just the left singular vectors of the waveforms
 
 wPCA = gpuArray(single(U(:, 1:nPCs))); % take as many as needed
 wPCA(:,1) = - wPCA(:,1) * sign(wPCA(ops.nt0min,1));  % adjust the arbitrary sign of the first PC so its negativity is downward
