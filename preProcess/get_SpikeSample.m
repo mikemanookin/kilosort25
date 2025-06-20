@@ -5,7 +5,7 @@ function clips = get_SpikeSample(dataRAW, row, col, ops, dc, flag)
 [nT, nChan] = size(dataRAW);
 
 % times around the peak to consider
-dt = [1:ops.nt0];
+dt = 1:ops.nt0;
 
 if nargin<6 || flag == 0
     dt = -ops.nt0min + dt; % the negativity is expected at nt0min, so we align the detected peaks there

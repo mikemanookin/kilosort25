@@ -46,7 +46,7 @@ Nnearest    = min(ops.Nchan, 32);
 sigmaMask  = ops.sigmaMask;
 
 % spike threshold for finding missed spikes in residuals
-ops.spkTh = -6; % why am I overwriting this here?
+% ops.spkTh = -6; % why am I overwriting this here?
 
 % update to fix the spike holes problem, issue #594
 ntpad = rez.ops.ntbuff; 
@@ -226,7 +226,7 @@ for ibatch = 1:niter
 
     st = toff + double(st0);
     
-    irange = ntot + [1:numel(x0)]; % spikes and features go into these indices
+    irange = ntot + (1:numel(x0)); % spikes and features go into these indices
     
     if ntot+numel(x0)>size(st3,1)
         % if we exceed the original allocated memory, double the allocated sizes

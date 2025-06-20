@@ -23,7 +23,7 @@ for ibatch = 1:nskip:Nbatch
     dat = dat';
 
     % move data to GPU and scale it back to unit variance
-    dataRAW = gpuArray(dat);
+    dataRAW = gpuArray(dat); % Is this necessary???
     dataRAW = single(dataRAW);
     dataRAW = dataRAW / ops.scaleproc;
 
