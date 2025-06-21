@@ -42,7 +42,7 @@ for ibatch = 1:nskip:Nbatch
 
     dd(:, k + (1:size(c,2))) = c;
     k = k + size(c,2);
-    if k>1e5
+    if k > 1e6 %1e5
         disp('Exceeded max iterations in extractTemplatesfromSnippets..')
         break;
     end
