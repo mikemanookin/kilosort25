@@ -52,6 +52,8 @@ fclose(fid);
 % discard empty samples
 dd = dd(:, 1:k);
 
+disp(['Template size: ',num2str(size(dd))])
+
 % initialize the template clustering with random waveforms
 % wTEMP = dd(:, randperm(size(dd,2), nPCs));
 wTEMP = dd(:, round(linspace(1, size(dd,2), nPCs)));
