@@ -93,8 +93,7 @@ p1 = .95; % decay of nsp estimate in each batch
 iW = int32(squeeze(iW));
 [WtW, iList] = getMeWtW(single(W), single(U), Nnearest);
 
-% Mike added this. Keep track of the channel each template lives on.
-rez.template_channel = single(iW);
+
 
 fprintf('Time %3.0fs. Optimizing templates ...\n', toc)
 
@@ -269,6 +268,10 @@ for ibatch = 1:niter
 end
 fclose(fid);
 toc
+
+% Mike added this. Keep track of the channel each template lives on.
+rez.template_channel = iW;
+rez.template_channel = gather(rez.template_channel);
 
 % discards the unused portion of the arrays
 st3 = st3(1:ntot, :);

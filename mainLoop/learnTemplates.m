@@ -40,7 +40,7 @@ Nnearest    = min(ops.Nchan, 32);
 sigmaMask  = ops.sigmaMask;
 
 % spike threshold for finding missed spikes in residuals
-ops.spkTh = -6; % why am I overwriting this here?
+% ops.spkTh = -6; % why am I overwriting this here?
 
 batchstart = 0:NT:NT*nBatches;
 
