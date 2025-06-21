@@ -18,6 +18,9 @@ smin = my_min(S1, loc_range, [1 2]); % This should be a logical matrix.
 % Logical matrix of detected spikes
 peaks = (S1<smin+1e-3 & S1<Th);
 
+% local_min = mike_min(S1);
+% peaks = local_min & (S1 < Th*100);
+
 % only take local peaks that are isolated from other local peaks
 % sum_peaks = my_sum(peaks, long_range, [1 2]); % if there is another local peak close by, this sum will be at least 2
 % peaks = peaks .* (sum_peaks<1.2) .* S1; % set to 0 peaks that are not isolated, and multiply with the voltage values

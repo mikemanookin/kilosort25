@@ -5,6 +5,12 @@ function [wTEMP, wPCA] = extractTemplatesfromSnippets(rez, nPCs)
 
 ops = rez.ops;
 
+if isfield(ops,'max_learned_spikes')
+    max_learned_spikes = ops.max_learned_spikes;
+else
+    max_learned_spikes = 1e5;
+end
+
 % skip every this many batches
 nskip = getOr(ops, 'nskip', 25);
 
@@ -42,7 +48,7 @@ for ibatch = 1:nskip:Nbatch
 
     dd(:, k + (1:size(c,2))) = c;
     k = k + size(c,2);
-    if k > 1e6 %1e5
+    if k > max_learned_spikes
         disp('Exceeded max iterations in extractTemplatesfromSnippets..')
         break;
     end
