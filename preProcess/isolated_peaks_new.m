@@ -21,7 +21,7 @@ nt0 = ops.nt0;
 % local_min = mike_min(S1);
 % peaks = local_min & (S1 < Th*100);
 
-disp(['Min of data: ',num2str(min(S1(:)),'; Th:',num2str(Th)])
+disp(['Min of data: ',num2str(min(S1(:))),'; Th:',num2str(Th)])
 return;
 
 % only take local peaks that are isolated from other local peaks
