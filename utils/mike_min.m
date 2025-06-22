@@ -35,7 +35,7 @@ for ii=1:2
     idx = 1:size(dt,1)-ii;
     dt(idx,:) = this_data(ii+1:end,:) - this_data(1:end-ii,:);
 end
-dt = dt/loc_range(1);
+dt = dt/2;
 
 % Take the second derivative.
 local_minima = zeros(size(this_data));
