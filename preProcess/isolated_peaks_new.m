@@ -21,8 +21,6 @@ nt0 = ops.nt0;
 local_min = mike_min(S1);
 peaks = local_min & (S1 < Th);
 
-disp(sum(peaks(:)))
-return;
 
 
 % only take local peaks that are isolated from other local peaks
