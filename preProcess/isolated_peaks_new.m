@@ -21,7 +21,7 @@ nt0 = ops.nt0;
 local_min = mike_min(S1);
 peaks = local_min & (S1 < Th);
 
-disp(sum(local_min(:)))
+disp(sum(peaks(:)))
 return;
 
 
