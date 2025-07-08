@@ -15,30 +15,32 @@ spike_amp = spike_amp(spike_idx);
 
 %% Clip out the spikes.
 half_width = 21;
-data_copy = dataRAW;
-[num_rows, ~] = size(dataRAW);
+% data_copy = dataRAW;
+% [num_rows, ~] = size(dataRAW);
+% 
+% for ii = 1:length(spike_row)
+%     r = spike_row(ii);
+%     c = spike_col(ii);
+% 
+%     % Define window bounds
+%     c_start = max(r - half_width, 1);
+%     c_end = min(r + half_width, num_rows);
+% 
+%     % Compute average of edge values
+%     % window_values = dataRAW([c_start, c_end], c);
+%     window_values = data_copy([c_start, c_end], c);
+%     % replacement_value = mean(window_values);
+% 
+%     % Linear interpolation.
+%     % window_data = dataRAW(c_start:c_end, c);
+%     window_slope = diff(window_values)/(c_end-c_start);
+%     replacement_value = (0:(c_end-c_start))*window_slope + window_values(1);
+% 
+%     % Replace values in the window
+%     data_copy(c_start:c_end, c) = replacement_value;
+% end
 
-for ii = 1:length(spike_row)
-    r = spike_row(ii);
-    c = spike_col(ii);
-    
-    % Define window bounds
-    c_start = max(r - half_width, 1);
-    c_end = min(r + half_width, num_rows);
-    
-    % Compute average of edge values
-    % window_values = dataRAW([c_start, c_end], c);
-    window_values = data_copy([c_start, c_end], c);
-    % replacement_value = mean(window_values);
-
-    % Linear interpolation.
-    % window_data = dataRAW(c_start:c_end, c);
-    window_slope = diff(window_values)/(c_end-c_start);
-    replacement_value = (0:(c_end-c_start))*window_slope + window_values(1);
-    
-    % Replace values in the window
-    data_copy(c_start:c_end, c) = replacement_value;
-end
+data_copy = clip_spikes(dataRAW, spike_row, spike_col, half_width);
 
 [b1, a1] = butter(3, 500/sample_rate*2, 'low');
 data_low = filter(b1, a1, data_copy); % causal forward filter
