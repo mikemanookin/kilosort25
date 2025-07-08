@@ -25,7 +25,7 @@ fidW        = fopen(out_file_path,   'w+'); % open for writing processed data
 if fidW<3
     error('Could not open %s for writing.',ops.fproc);    
 end
-
+twind=0;
 ntb = 64;
 w_edge = linspace(0, 1, ntb)';
 datr_prev = zeros(ntb, NchanTOT, 'single');
@@ -33,7 +33,7 @@ datr_prev = zeros(ntb, NchanTOT, 'single');
 for ibatch = 1:Nbatch
     % we'll create a binary file of batches of NT samples, which overlap consecutively on ops.ntbuff samples
     % in addition to that, we'll read another ops.ntbuff samples from before and after, to have as buffers for filtering
-    offset = max(0, ops.twind + 2*NchanTOT*(NT * (ibatch-1) - ntb)); % number of samples to start reading at.
+    offset = max(0, twind + 2*NchanTOT*(NT * (ibatch-1) - ntb)); % number of samples to start reading at.
     
     fseek(fid, offset, 'bof'); % fseek to batch start in raw file
 
