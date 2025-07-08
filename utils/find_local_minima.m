@@ -1,4 +1,4 @@
-function local_minima = mike_min(this_data)
+function local_minima = find_local_minima(this_data)
 
 
 % Calculate the first derivative.
