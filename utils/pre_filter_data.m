@@ -1,10 +1,10 @@
-function [spike_row, spike_col, spike_amp] = pre_filter_data(dataRAW, spike_row, spike_col, spike_amp, varargin)
+function pre_filter_data()
 
-ip = inputParser();
-ip.addParameter('threshold', -100, @(x)isfloat(x)); % Spike threshold
-ip.parse(varargin{:});
-
-threshold = ip.Results.threshold;
+% ip = inputParser();
+% ip.addParameter('threshold', -100, @(x)isfloat(x)); % Spike threshold
+% ip.parse(varargin{:});
+% 
+% threshold = ip.Results.threshold;
 
 in_file_path = '/data/data/sorted/20250306C/doves_images_bak.bin';
 out_file_path = '/data/data/sorted/20250306C/doves_images.bin';
