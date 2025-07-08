@@ -30,6 +30,7 @@ ntb = 64;
 w_edge = linspace(0, 1, ntb)';
 datr_prev = zeros(ntb, NchanTOT, 'single');
 
+tic
 for ibatch = 1:Nbatch
     % we'll create a binary file of batches of NT samples, which overlap consecutively on ops.ntbuff samples
     % in addition to that, we'll read another ops.ntbuff samples from before and after, to have as buffers for filtering
@@ -68,6 +69,10 @@ for ibatch = 1:Nbatch
     count = fwrite(fidW, datcpu, '*int16'); % write this batch to binary file
     if count~=numel(datcpu)
         error('Error writing batch %g to %s. Check available disk space.',ibatch,ops.fproc);
+    end
+    if mod(ibatch,10) == 0
+        disp(['Processed ',num2str(ibatch), ' batches'])
+        toc
     end
 end
 fclose(fidW); % close the files
