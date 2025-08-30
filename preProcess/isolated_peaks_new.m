@@ -10,6 +10,10 @@ nt0 = ops.nt0;
 % loc_range = [3  1];
 % long_range = [30  6];
 
+% Print the minimum value of S1 and the threshold for debugging.
+disp(['Minimum value of S1: ', num2str(min(S1(:)))]);
+disp(['Threshold value (Th): ', num2str(Th)]);
+
 % finding the local minimum in a sliding window within plus/minus loc_range extent
 % across time and across channels
 if sum(loc_range) > 2
