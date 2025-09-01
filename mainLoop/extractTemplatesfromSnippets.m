@@ -33,9 +33,17 @@ for ibatch = 1:nskip:Nbatch
     dataRAW = single(dataRAW);
     dataRAW = dataRAW / ops.scaleproc;
 
+    % 
+    if isfield(ops,'run_clean')
+        electrode_map = ElectrodeMap(rez.xc, rez.yc,60.0,ops.whiteningRange);
+        [row, col] = find_spike_templates(dat, electrode_map, ops);
+    else
+        % find isolated spikes from each batch
+        [row, col] = isolated_peaks_new(dataRAW, ops);
+    end
 
-    % find isolated spikes from each batch
-    [row, col] = isolated_peaks_new(dataRAW, ops);
+
+    
 
     % for each peak, get the voltage snippet from that channel
     clips = get_SpikeSample(dataRAW, row, col, ops, 0);
