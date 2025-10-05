@@ -5,6 +5,12 @@ function [wTEMP, wPCA] = extractTemplatesfromSnippets(rez, nPCs)
 
 ops = rez.ops;
 
+if isfield(ops,'run_clean')
+    run_clean = ops.run_clean;
+else
+    run_clean = false;
+end
+
 if isfield(ops,'max_learned_spikes')
     max_learned_spikes = ops.max_learned_spikes;
 else
@@ -34,7 +40,7 @@ for ibatch = 1:nskip:Nbatch
     dataRAW = dataRAW / ops.scaleproc;
 
     % 
-    if isfield(ops,'run_clean')
+    if run_clean
         electrode_map = ElectrodeMap(rez.xc, rez.yc,60.0,ops.whiteningRange);
         [row, col] = find_spike_templates(dat, electrode_map, ops);
     else
@@ -68,23 +74,61 @@ dd = dd(:, 1:k);
 
 disp(['Template size: ',num2str(size(dd))])
 
-% initialize the template clustering with random waveforms
-% wTEMP = dd(:, randperm(size(dd,2), nPCs));
-wTEMP = dd(:, round(linspace(1, size(dd,2), nPCs)));
-wTEMP = wTEMP ./ sum(wTEMP.^2,1).^.5; % normalize them
-
-for i = 1:10
-  % at each iteration, assign the waveform to its most correlated cluster
-   cc = wTEMP' * dd;
-   [amax, imax] = max(cc,[],1);
-   for j = 1:nPCs
-      wTEMP(:,j)  = dd(:,imax==j) * amax(imax==j)'; % weighted average to get new cluster means
-   end
-   wTEMP = wTEMP ./ sum(wTEMP.^2,1).^.5; % unit normalize
+% Make sure all of the spikes are negative at the peak.
+if run_clean
+    valid_spikes = logical(ones(1,size(dd,2)));
+    min_window = 1;
+    for ii = -min_window:min_window
+        valid_spikes = valid_spikes & (dd(ops.nt0min+ii,:) < 0);
+    end
+    dd = dd(:, valid_spikes);
+    % Normalize the spikes.
+    dd = dd ./ sum(dd.^2,1).^.5;
 end
+
 
 dd = double(gather(dd));
 [U, Sv, V] = svdecon(dd); % the PCs are just the left singular vectors of the waveforms
 
 wPCA = gpuArray(single(U(:, 1:nPCs))); % take as many as needed
 wPCA(:,1) = - wPCA(:,1) * sign(wPCA(ops.nt0min,1));  % adjust the arbitrary sign of the first PC so its negativity is downward
+
+% Initialize the templates.
+if run_clean
+    dd = gpuArray(dd);
+    % Project the spikes onto the PCs.
+    projection = dd' * wPCA;
+    % Sort the projections to get the initial templates.
+    [~, idx] = sort(projection, 'descend');
+    % Find the nPCs evenly spaced templates.
+    idx_spaced = round(linspace(1, size(dd,2), nPCs));
+    wTEMP = dd(:, idx(idx_spaced));
+    wTEMP = wTEMP ./ sum(wTEMP.^2,1).^.5; % normalize them
+
+    for i = 1:10
+        % at each iteration, assign the waveform to its most correlated cluster
+        cc = wTEMP' * dd;
+        [amax, imax] = max(cc,[],1);
+        for j = 1:nPCs
+            wTEMP(:,j)  = dd(:,imax==j) * amax(imax==j)'; % weighted average to get new cluster means
+        end
+        wTEMP = wTEMP ./ sum(wTEMP.^2,1).^.5; % unit normalize
+    end
+    wTEMP = single(wTEMP);
+else
+    dd = gpuArray(single(dd));
+    % initialize the template clustering with random waveforms
+    % wTEMP = dd(:, randperm(size(dd,2), nPCs));
+    wTEMP = dd(:, round(linspace(1, size(dd,2), nPCs)));
+    wTEMP = wTEMP ./ sum(wTEMP.^2,1).^.5; % normalize them
+
+    for i = 1:10
+    % at each iteration, assign the waveform to its most correlated cluster
+    cc = wTEMP' * dd;
+    [amax, imax] = max(cc,[],1);
+    for j = 1:nPCs
+        wTEMP(:,j)  = dd(:,imax==j) * amax(imax==j)'; % weighted average to get new cluster means
+    end
+    wTEMP = wTEMP ./ sum(wTEMP.^2,1).^.5; % unit normalize
+    end
+end
