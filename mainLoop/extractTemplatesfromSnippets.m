@@ -83,7 +83,7 @@ if run_clean
     end
     dd = dd(:, valid_spikes);
     % Normalize the spikes.
-    dd = dd ./ sum(dd.^2,1).^.5;
+    % dd = dd ./ sum(dd.^2,1).^.5;
 end
 
 
@@ -96,25 +96,77 @@ wPCA(:,1) = - wPCA(:,1) * sign(wPCA(ops.nt0min,1));  % adjust the arbitrary sign
 % Initialize the templates.
 if run_clean
     dd = gpuArray(dd);
-    % Project the spikes onto the PCs.
-    projection = dd' * wPCA;
-    % Sort the projections to get the initial templates.
-    [~, idx] = sort(projection, 'descend');
-    % Find the nPCs evenly spaced templates.
-    idx_spaced = round(linspace(1, size(dd,2), nPCs));
-    wTEMP = dd(:, idx(idx_spaced));
-    wTEMP = wTEMP ./ sum(wTEMP.^2,1).^.5; % normalize them
-
-    for i = 1:10
-        % at each iteration, assign the waveform to its most correlated cluster
-        cc = wTEMP' * dd;
-        [amax, imax] = max(cc,[],1);
-        for j = 1:nPCs
-            wTEMP(:,j)  = dd(:,imax==j) * amax(imax==j)'; % weighted average to get new cluster means
+    % Define the search type: 1D or 2D.
+    search_type = 1; % 1 or 2 dimensions.
+    % Testbed.
+    projection = dd' * (U(:,1:2)*Sv(1:2,1:2));
+    % 1D histogram.
+    if search_type == 1
+        edges = linspace(min(projection(:,1)),max(projection(:,1)),nPCs+1);
+        [~, ~, bin] = histcounts(projection(:,1), edges);
+        wTEMP = zeros(size(dd,1), nPCs);
+        for ii = 1:nPCs
+            wTEMP(:,ii) = median(dd(:, bin==ii),2);
+            wTEMP(:,ii) = wTEMP(:,ii) ./ sum(wTEMP(:,ii).^2,1).^.5; % normalize them
         end
-        wTEMP = wTEMP ./ sum(wTEMP.^2,1).^.5; % unit normalize
+    else
+        % 2D histogram.
+        found = false;
+        n_bins = ceil(sqrt(nPCs));
+        while ~found
+            [N,~,~,binX,binY] = histcounts2(projection(:,1),projection(:,2),n_bins);
+            if sum(N > 0,'all') >= nPCs
+                found = true;
+            end
+            n_bins = n_bins + 1;
+        end
+        % Sort N in descending order.
+        [~, linear_indices] = sort(N(:),'descend'); % Vectorize N and sort
+        % To get original row and column indices from linear indices:
+        [rows, cols] = ind2sub(size(N), linear_indices);
+        wTEMP = zeros(size(dd,1), nPCs);
+        for ii = 1:nPCs
+            bin = (binX == rows(ii)) & (binY == cols(ii));
+            wTEMP(:,ii) = median(dd(:, bin),2);
+            wTEMP(:,ii) = wTEMP(:,ii) ./ sum(wTEMP(:,ii).^2,1).^.5; % normalize them
+        end
     end
-    wTEMP = single(wTEMP);
+    
+    % % Project the spikes onto the PCs.
+    % projection = dd' * wPCA;
+    % % Create a grid of points in the projection space.
+    % x_range = linspace(min(projection(:,1)),max(projection(:,1)),3);
+    % y_range = linspace(min(projection(:,2)),max(projection(:,2)),3);
+    % [X, Y] = meshgrid(x_range, y_range);
+    % grid_points = [X(:), Y(:)];
+    % % Find the closest template to each grid point.
+    % D = pdist2(grid_points, projection(:,1:2));
+    % [~, idx] = min(D,[],2);
+    % wTEMP = dd(:, idx);
+    % foo = wTEMP * projection(idx,:)';
+    % % Find the distances to the center of the grid.
+    % D_center = pdist2(projection(idx,1:2), mean(projection(idx,1:2),1));
+    % % Sort the templates by the distance to the center of the grid.
+    % [~, idx_center] = sort(D_center);
+    % wTEMP = wTEMP(:, idx_center([1,nPCs-1:end]));
+    % // % Sort the projections to get the initial templates.
+    % // [~, idx] = sort(projection(:,1), 'descend');
+    % // % Find the nPCs evenly spaced templates.
+    % // idx_spaced = round(linspace(1, size(dd,2), nPCs));
+    % // wTEMP = dd(:, idx(idx_spaced));
+    % wTEMP = wTEMP ./ sum(wTEMP.^2,1).^.5; % normalize them
+
+    % for i = 1:10
+    %     % at each iteration, assign the waveform to its most correlated cluster
+    %     cc = wTEMP' * dd;
+    %     [amax, imax] = max(cc,[],1);
+    %     for j = 1:nPCs
+    %         tmp = median(dd(:,imax==j),2);
+    %         wTEMP(:,j)  = dd(:,imax==j) * amax(imax==j)'; % weighted average to get new cluster means
+    %     end
+    %     wTEMP = wTEMP ./ sum(wTEMP.^2,1).^.5; % unit normalize
+    % end
+    wTEMP = gpuArray(single(wTEMP));
 else
     dd = gpuArray(single(dd));
     % initialize the template clustering with random waveforms
