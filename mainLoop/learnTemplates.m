@@ -13,10 +13,20 @@ Nrank = 3; % this one is the rank of the templates
 rez.ops.LTseed = getOr(rez.ops, 'LTseed', 1);
 rng('default'); rng(rez.ops.LTseed);
 
+if ~isfield(rez.ops,'precomputed_templates')
+    rez.ops.precomputed_templates = false;
+end
+
 ops = rez.ops;
 
 % we need PC waveforms, as well as template waveforms
-[wTEMP, wPCA]    = extractTemplatesfromSnippets(rez, NrankPC);
+if rez.ops.precomputed_templates
+    tmp = load('templates_and_pcs.mat');
+    wTEMP = tmp.wTEMP;
+    wPCA = tmp.wPCA;
+else
+    [wTEMP, wPCA]    = extractTemplatesfromSnippets(rez, NrankPC);
+end
 
 % move these to the GPU
 wPCA = gpuArray(wPCA(:, 1:Nrank));
