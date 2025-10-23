@@ -27,7 +27,7 @@ batchstart = 0:NT:NT*Nbatch;
 fid = fopen(ops.fproc, 'r'); % open the preprocessed data file
 
 k = 0;
-dd = gpuArray.zeros(ops.nt0, 5e4, 'single'); % preallocate matrix to hold 1D spike snippets
+dd = gpuArray.zeros(ops.nt0, max_learned_spikes, 'single'); % preallocate matrix to hold 1D spike snippets
 for ibatch = 1:nskip:Nbatch
     offset = 2 * ops.Nchan*batchstart(ibatch);
     fseek(fid, offset, 'bof');
