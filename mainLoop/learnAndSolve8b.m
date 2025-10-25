@@ -31,8 +31,18 @@ if ~isfield(rez, 'W') || isempty(rez.W)
 %         end
 %         rez.istart  = rez.iorig(ihalf); % this is the absolute batch id where we start sorting
 %     end
-    
-    rez     = learnTemplates(rez, rez.iorig);
+    if rez.ops.precomputed_templates
+        template_dir = rez.ops.tempDirectory;
+        template_filepath = fullfile(template_dir,'templates.mat');
+        if exist(template_filepath, "file")
+            rez = load_spike_templates(template_dir, rez);
+        else
+            rez = learnTemplates(rez, rez.iorig);
+            save_spike_templates(template_dir, rez);
+        end
+    else
+        rez     = learnTemplates(rez, rez.iorig);
+    end
 end
 
 rez.ops.fig = 0;
