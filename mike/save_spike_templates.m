@@ -1,4 +1,4 @@
-function results = save_spike_templates(template_dir, results)
+function save_spike_templates(template_dir, results)
 
 % Define the field names for the ops and results structures.
 ops_names = {'wTEMP','wPCA'};

@@ -6,7 +6,7 @@ results_names = {'simScore','iNeighPC','iNeigh','dWU','W','U','mu','Wraw','nsp'}
 
 % Load the templates.
 template_filepath = fullfile(template_dir,'templates.mat');
-if exist("template_filepath", "file")
+if exist(template_filepath, "file")
     out_struct = load(template_filepath);
     for ii = 1:length(ops_names)
          results.ops.(ops_names{ii}) = out_struct.(ops_names{ii}); 
