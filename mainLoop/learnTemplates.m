@@ -20,13 +20,13 @@ end
 ops = rez.ops;
 
 % we need PC waveforms, as well as template waveforms
-if rez.ops.precomputed_templates
-    tmp = load('templates_and_pcs.mat');
-    wTEMP = tmp.wTEMP;
-    wPCA = tmp.wPCA;
-else
+% if rez.ops.precomputed_templates
+%     tmp = load('templates_and_pcs.mat');
+%     wTEMP = tmp.wTEMP;
+%     wPCA = tmp.wPCA;
+% else
     [wTEMP, wPCA]    = extractTemplatesfromSnippets(rez, NrankPC);
-end
+% end
 
 % move these to the GPU
 wPCA = gpuArray(wPCA(:, 1:Nrank));
@@ -137,7 +137,7 @@ for ibatch = 1:niter
         Params(2) = Nfilt; % update in the CUDA parameters
     end
     
-    % resort the order of the templates according to best peak channel
+    % Resort the order of the templates according to best peak channel
     % this is important in order to have cohesive memory requests from the GPU RAM
     [~, iW] = max(abs(dWU(nt0min, :, :)), [], 2); % max channel (either positive or negative peak)
     iW = int32(squeeze(iW));
