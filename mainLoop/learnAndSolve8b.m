@@ -36,6 +36,7 @@ if ~isfield(rez, 'W') || isempty(rez.W)
         template_filepath = fullfile(template_dir,'templates.mat');
         if exist(template_filepath, "file")
             rez = load_spike_templates(template_dir, rez);
+            disp('Reusing cluster templates from mount.')
         else
             rez = learnTemplates(rez, rez.iorig);
             save_spike_templates(template_dir, rez);
