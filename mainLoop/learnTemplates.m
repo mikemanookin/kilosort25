@@ -27,6 +27,14 @@ ops = rez.ops;
 % else
     [wTEMP, wPCA]    = extractTemplatesfromSnippets(rez, NrankPC);
 % end
+% Test: Create Gaussian templates centered at nt0min.
+% g_temp = zeros(size(wTEMP));
+% x0 = 20; % ops.nt0min
+% x = (1:ops.nt0) - x0;
+% sigma = 0.7;
+% gaussian_values = (1 / (sigma * sqrt(2 * pi))) * exp(-(x.^2) / (2 * sigma^2));
+% 
+% g2 = (1 / (sigma * sqrt(2 * pi))) * exp(-((0:60).^2) / (2 * sigma^2));
 
 % move these to the GPU
 wPCA = gpuArray(wPCA(:, 1:Nrank));

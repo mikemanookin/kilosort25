@@ -39,7 +39,7 @@ if ~isfield(rez, 'W') || isempty(rez.W)
             disp('Reusing cluster templates from mount.')
         else
             rez = learnTemplates(rez, rez.iorig);
-            save_spike_templates(template_dir, rez);
+            % save_spike_templates(template_dir, rez);
         end
     else
         rez     = learnTemplates(rez, rez.iorig);
